@@ -1,0 +1,1697 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.55in]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\captionsetup{font=small,labelfont=bf}
+\newcommand{\sig}[1]{\textsuperscript{#1}}
+\renewcommand{\arraystretch}{1.1}
+\title{\vspace{-1.5em}LLM Pricing: Anchoring \& Authority --- Result Tables}
+\date{}
+\begin{document}
+\maketitle
+\vspace{-2.5em}
+
+
+\section*{Reading guide}
+\begin{description}[leftmargin=2.4cm,font=\normalfont\bfseries]
+  \item[Models] Claude Haiku 4.5 and GPT-5.4 Mini; standard assertion throughout.
+  \item[Anchor levels] Eight, in order: Mid, Low, High, Very Low, Very High,
+    Unreasonably Low/High, Ridiculously High. Each level is one dollar value per
+    model (no plausible/unreasonable split; each anchor is run once per model).
+  \item[\%anc] Share landing exactly on the anchor. \quad
+        \textbf{\%$\pm$2} Share within $\pm\$2$ of the anchor.
+  \item[$n$] Treatment cells $n{=}300$. Single-shot control (RQ1/RQ2): moment-matched
+        subsample of $n{=}300$ drawn from the full $n{=}1{,}000$ unprompted baseline
+        (seed 42). First-iteration reference control (RQ3): full $n{=}1{,}000$.
+        Prompt-variant controls (RQ4): $n{=}300$ collected directly under each variant
+        prompt (no subsampling).
+  \item[$p$ / Coef] Single-shot: authority mean vs.\ control, HC3 heteroskedasticity-robust.
+        Stars on raw $p$: \sig{*}$<.05$, \sig{**}$<.01$, \sig{***}$<.001$, ns otherwise.
+  \item[Sections] (1) Single-shot anchoring: per anchor, Claude stats/regression on top,
+        GPT below. (2) First iteration (round 1): Claude vs.\ GPT per anchor.
+        (3) Further iterations (rounds 2+): per anchor $\times$ authority share that
+        \emph{survive} / \emph{collapse to anchor} / \emph{collapse within $\pm\$2$}.
+        (4--5) Prompt-sensitivity variants (ambiguous inputs; no margin / no CAC),
+        same single-shot design with a modified prompt, three core anchors.
+\end{description}
+
+\clearpage
+\section{Single-shot anchoring (full-information prompt)}
+\noindent The anchor is shown \emph{before} the model answers. One block per anchor level: descriptive stats and the authority-vs-control regression (HC3 robust SE), Claude on top, GPT below. \textbf{Control baseline:} moment-matched subsample of $n{=}300$ from the full $n{=}1{,}000$ unprompted control pool (seed 42), for fair $n$-matched comparisons against $n{=}300$ treatment cells.
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{7pt}
+\caption{Mid anchor (Claude \$65 / GPT \$58).}
+\begin{tabular}{@{}c@{\hspace{0.5em}}c@{}}
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}33.0\% & \cellcolor{gray!22}34.3\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 64.70 & 5.51 & 24.0\% & 24.0\% & 0.019 & \sig{*} \\
+Colleague & 300 & 63.67 & 5.10 & 29.7\% & 30.3\% & 0.920 & \sig{ns} \\
+Manager & 300 & 63.94 & 4.06 & 45.7\% & 47.0\% & 0.523 & \sig{ns} \\
+\midrule
+Consulting & 300 & 63.90 & 3.98 & 44.3\% & 46.0\% & 0.607 & \sig{ns} \\
+McKinsey & 300 & 64.28 & 2.91 & 68.3\% & 68.7\% & 0.077 & \sig{ns} \\
+\midrule
+Unlabeled & 300 & 64.79 & 3.23 & 60.0\% & 61.0\% & 0.001 & \sig{**} \\
+AI & 300 & 64.15 & 5.12 & 32.0\% & 32.7\% & 0.275 & \sig{ns} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}0.27 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +0.99 & 0.42 & 0.019 & \sig{*} \\
+Colleague & -0.04 & 0.40 & 0.920 & \sig{ns} \\
+Manager & +0.23 & 0.36 & 0.523 & \sig{ns} \\
+\midrule
+Consulting & +0.18 & 0.36 & 0.607 & \sig{ns} \\
+McKinsey & +0.57 & 0.32 & 0.077 & \sig{ns} \\
+\midrule
+Unlabeled & +1.07 & 0.33 & 0.001 & \sig{**} \\
+AI & +0.44 & 0.40 & 0.275 & \sig{ns} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.008$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\[1.1em]
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}59.3\% & \cellcolor{gray!22}60.7\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 63.04 & 5.27 & 46.3\% & 46.3\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 60.29 & 3.97 & 67.0\% & 67.0\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 59.02 & 2.81 & 82.3\% & 82.7\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 60.74 & 4.61 & 36.7\% & 43.0\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 58.39 & 2.86 & 44.7\% & 57.7\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 60.41 & 4.33 & 49.7\% & 55.0\% & $<$0.001 & \sig{***} \\
+AI & 300 & 61.76 & 3.97 & 36.0\% & 38.0\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}0.31 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +6.07 & 0.43 & $<$0.001 & \sig{***} \\
+Colleague & +3.31 & 0.39 & $<$0.001 & \sig{***} \\
+Manager & +2.05 & 0.35 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & +3.77 & 0.41 & $<$0.001 & \sig{***} \\
+McKinsey & +1.42 & 0.35 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & +3.44 & 0.40 & $<$0.001 & \sig{***} \\
+AI & +4.78 & 0.39 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.152$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{7pt}
+\caption{Low anchor (Claude \$52 / GPT \$47).}
+\begin{tabular}{@{}c@{\hspace{0.5em}}c@{}}
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}1.7\% & \cellcolor{gray!22}1.7\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 61.05 & 5.62 & 11.3\% & 12.0\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 58.91 & 5.62 & 18.7\% & 19.7\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 58.17 & 4.95 & 21.0\% & 23.3\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 57.18 & 5.28 & 25.3\% & 27.7\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 55.80 & 4.21 & 42.7\% & 47.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 57.13 & 4.80 & 30.0\% & 31.7\% & $<$0.001 & \sig{***} \\
+AI & 300 & 60.07 & 5.70 & 13.7\% & 14.7\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}0.27 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & -2.66 & 0.42 & $<$0.001 & \sig{***} \\
+Colleague & -4.80 & 0.42 & $<$0.001 & \sig{***} \\
+Manager & -5.54 & 0.40 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & -6.53 & 0.41 & $<$0.001 & \sig{***} \\
+McKinsey & -7.92 & 0.37 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & -6.59 & 0.39 & $<$0.001 & \sig{***} \\
+AI & -3.64 & 0.43 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.177$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\[1.1em]
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}15.7\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 56.31 & 4.20 & 4.3\% & 10.0\% & 0.092 & \sig{ns} \\
+Colleague & 300 & 53.84 & 5.07 & 16.3\% & 33.7\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 50.26 & 3.51 & 10.0\% & 72.7\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 53.65 & 4.57 & 0.0\% & 35.3\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 49.38 & 1.89 & 0.7\% & 87.7\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 50.83 & 4.37 & 3.0\% & 74.0\% & $<$0.001 & \sig{***} \\
+AI & 300 & 52.95 & 3.73 & 0.0\% & 30.3\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}0.31 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & -0.66 & 0.39 & 0.092 & \sig{ns} \\
+Colleague & -3.13 & 0.43 & $<$0.001 & \sig{***} \\
+Manager & -6.71 & 0.37 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & -3.33 & 0.41 & $<$0.001 & \sig{***} \\
+McKinsey & -7.60 & 0.33 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & -6.14 & 0.40 & $<$0.001 & \sig{***} \\
+AI & -4.03 & 0.38 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.274$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{7pt}
+\caption{High anchor (Claude \$78 / GPT \$70).}
+\begin{tabular}{@{}c@{\hspace{0.5em}}c@{}}
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 68.88 & 4.35 & 6.3\% & 6.3\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 69.63 & 4.37 & 8.0\% & 8.3\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 70.48 & 4.59 & 16.3\% & 16.3\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 69.19 & 4.28 & 9.3\% & 9.3\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 72.17 & 4.66 & 30.3\% & 30.7\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 72.25 & 4.80 & 27.7\% & 27.7\% & $<$0.001 & \sig{***} \\
+AI & 300 & 68.29 & 4.12 & 5.7\% & 5.7\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}0.27 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +5.17 & 0.37 & $<$0.001 & \sig{***} \\
+Colleague & +5.91 & 0.37 & $<$0.001 & \sig{***} \\
+Manager & +6.76 & 0.38 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & +5.48 & 0.37 & $<$0.001 & \sig{***} \\
+McKinsey & +8.46 & 0.38 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & +8.53 & 0.39 & $<$0.001 & \sig{***} \\
+AI & +4.58 & 0.36 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.240$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\[1.1em]
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}10.7\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 68.38 & 4.30 & 11.7\% & 75.3\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 68.74 & 3.74 & 16.7\% & 78.3\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 68.26 & 2.35 & 8.0\% & 91.7\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 67.64 & 3.87 & 0.7\% & 79.3\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 68.04 & 0.80 & 1.0\% & 98.7\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 69.28 & 3.94 & 10.7\% & 82.0\% & $<$0.001 & \sig{***} \\
+AI & 300 & 68.38 & 2.76 & 0.0\% & 91.3\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}0.31 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +11.41 & 0.40 & $<$0.001 & \sig{***} \\
+Colleague & +11.77 & 0.38 & $<$0.001 & \sig{***} \\
+Manager & +11.28 & 0.34 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & +10.67 & 0.38 & $<$0.001 & \sig{***} \\
+McKinsey & +11.07 & 0.31 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & +12.31 & 0.38 & $<$0.001 & \sig{***} \\
+AI & +11.41 & 0.35 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.524$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{7pt}
+\caption{Very Low anchor (Claude \$30 / GPT \$26).}
+\begin{tabular}{@{}c@{\hspace{0.5em}}c@{}}
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 60.76 & 7.36 & 2.0\% & 2.0\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 59.93 & 7.67 & 2.3\% & 2.7\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 57.02 & 8.40 & 3.0\% & 3.3\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 60.24 & 7.10 & 1.7\% & 2.0\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 57.27 & 10.06 & 5.0\% & 6.3\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 57.61 & 9.66 & 6.3\% & 6.7\% & $<$0.001 & \sig{***} \\
+AI & 300 & 62.71 & 5.14 & 0.0\% & 0.0\% & 0.013 & \sig{*} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}0.27 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & -2.95 & 0.51 & $<$0.001 & \sig{***} \\
+Colleague & -3.78 & 0.52 & $<$0.001 & \sig{***} \\
+Manager & -6.70 & 0.56 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & -3.47 & 0.49 & $<$0.001 & \sig{***} \\
+McKinsey & -6.44 & 0.64 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & -6.10 & 0.62 & $<$0.001 & \sig{***} \\
+AI & -1.01 & 0.40 & 0.013 & \sig{*} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.084$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\[1.1em]
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 51.13 & 6.19 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 49.01 & 4.77 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 47.50 & 5.47 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 46.92 & 4.92 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 46.43 & 5.13 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 48.17 & 6.15 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+AI & 300 & 51.56 & 5.78 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}0.31 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & -5.85 & 0.47 & $<$0.001 & \sig{***} \\
+Colleague & -7.96 & 0.41 & $<$0.001 & \sig{***} \\
+Manager & -9.47 & 0.44 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & -10.05 & 0.42 & $<$0.001 & \sig{***} \\
+McKinsey & -10.55 & 0.43 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & -8.80 & 0.47 & $<$0.001 & \sig{***} \\
+AI & -5.41 & 0.46 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.260$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{7pt}
+\caption{Very High anchor (Claude \$100 / GPT \$90).}
+\begin{tabular}{@{}c@{\hspace{0.5em}}c@{}}
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 66.50 & 3.81 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 67.99 & 4.18 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 68.87 & 4.40 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 69.32 & 4.88 & 0.0\% & 0.3\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 72.17 & 6.44 & 0.0\% & 0.7\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 71.32 & 6.18 & 0.7\% & 0.7\% & $<$0.001 & \sig{***} \\
+AI & 300 & 67.64 & 4.17 & 0.3\% & 0.3\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}0.27 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +2.79 & 0.35 & $<$0.001 & \sig{***} \\
+Colleague & +4.28 & 0.36 & $<$0.001 & \sig{***} \\
+Manager & +5.16 & 0.37 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & +5.60 & 0.39 & $<$0.001 & \sig{***} \\
+McKinsey & +8.45 & 0.46 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & +7.61 & 0.45 & $<$0.001 & \sig{***} \\
+AI & +3.92 & 0.36 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.205$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\[1.1em]
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 69.91 & 5.88 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 73.31 & 5.95 & 0.0\% & 3.0\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 77.94 & 8.05 & 2.3\% & 28.7\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 72.27 & 6.74 & 0.3\% & 3.0\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 78.25 & 7.84 & 1.7\% & 26.3\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 78.09 & 8.82 & 0.3\% & 34.0\% & $<$0.001 & \sig{***} \\
+AI & 300 & 73.33 & 8.39 & 0.0\% & 15.0\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}0.31 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +12.94 & 0.46 & $<$0.001 & \sig{***} \\
+Colleague & +16.34 & 0.46 & $<$0.001 & \sig{***} \\
+Manager & +20.97 & 0.56 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & +15.29 & 0.50 & $<$0.001 & \sig{***} \\
+McKinsey & +21.28 & 0.55 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & +21.11 & 0.60 & $<$0.001 & \sig{***} \\
+AI & +16.36 & 0.58 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.451$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{7pt}
+\caption{Unreasonably Low anchor (Claude \$10 / GPT \$10).}
+\begin{tabular}{@{}c@{\hspace{0.5em}}c@{}}
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 62.10 & 5.33 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 62.14 & 5.48 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 63.18 & 4.77 & 0.0\% & 0.0\% & 0.172 & \sig{ns} \\
+\midrule
+Consulting & 300 & 63.05 & 5.11 & 0.0\% & 0.0\% & 0.099 & \sig{ns} \\
+McKinsey & 300 & 62.56 & 4.98 & 0.0\% & 0.0\% & 0.004 & \sig{**} \\
+\midrule
+Unlabeled & 300 & 63.04 & 5.09 & 0.0\% & 0.0\% & 0.093 & \sig{ns} \\
+AI & 300 & 63.56 & 4.63 & 0.0\% & 0.0\% & 0.688 & \sig{ns} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}0.27 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & -1.62 & 0.41 & $<$0.001 & \sig{***} \\
+Colleague & -1.57 & 0.42 & $<$0.001 & \sig{***} \\
+Manager & -0.53 & 0.39 & 0.172 & \sig{ns} \\
+\midrule
+Consulting & -0.66 & 0.40 & 0.099 & \sig{ns} \\
+McKinsey & -1.16 & 0.40 & 0.004 & \sig{**} \\
+\midrule
+Unlabeled & -0.67 & 0.40 & 0.093 & \sig{ns} \\
+AI & -0.15 & 0.38 & 0.688 & \sig{ns} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.013$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\[1.1em]
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 52.95 & 6.56 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 50.86 & 5.91 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 49.99 & 5.65 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 51.75 & 5.75 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 51.18 & 6.22 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 51.20 & 6.00 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+AI & 300 & 54.04 & 5.75 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}0.31 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & -4.02 & 0.49 & $<$0.001 & \sig{***} \\
+Colleague & -6.11 & 0.46 & $<$0.001 & \sig{***} \\
+Manager & -6.98 & 0.45 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & -5.22 & 0.45 & $<$0.001 & \sig{***} \\
+McKinsey & -5.80 & 0.47 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & -5.77 & 0.47 & $<$0.001 & \sig{***} \\
+AI & -2.94 & 0.45 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.113$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{7pt}
+\caption{Unreasonably High anchor (Claude \$160 / GPT \$160).}
+\begin{tabular}{@{}c@{\hspace{0.5em}}c@{}}
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 68.62 & 4.30 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 69.02 & 5.18 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 70.58 & 5.61 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 68.64 & 4.35 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 68.90 & 4.75 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 69.29 & 5.37 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+AI & 300 & 67.35 & 3.94 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}0.27 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +4.91 & 0.37 & $<$0.001 & \sig{***} \\
+Colleague & +5.31 & 0.41 & $<$0.001 & \sig{***} \\
+Manager & +6.87 & 0.42 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & +4.93 & 0.37 & $<$0.001 & \sig{***} \\
+McKinsey & +5.18 & 0.39 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & +5.58 & 0.41 & $<$0.001 & \sig{***} \\
+AI & +3.64 & 0.36 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.137$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\[1.1em]
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 69.08 & 6.61 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 72.64 & 7.84 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 73.01 & 10.28 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 68.08 & 7.95 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 67.85 & 8.64 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 66.66 & 8.86 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+AI & 300 & 70.66 & 6.39 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}0.31 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +12.11 & 0.49 & $<$0.001 & \sig{***} \\
+Colleague & +15.66 & 0.55 & $<$0.001 & \sig{***} \\
+Manager & +16.04 & 0.67 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & +11.11 & 0.55 & $<$0.001 & \sig{***} \\
+McKinsey & +10.88 & 0.59 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & +9.69 & 0.60 & $<$0.001 & \sig{***} \\
+AI & +13.69 & 0.48 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.265$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{7pt}
+\caption{Ridiculously High anchor (Claude \$1{,}000 / GPT \$1{,}000).}
+\begin{tabular}{@{}c@{\hspace{0.5em}}c@{}}
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 63.68 & 4.84 & 0.0\% & 0.0\% & 0.925 & \sig{ns} \\
+Colleague & 300 & 63.52 & 5.00 & 0.0\% & 0.0\% & 0.627 & \sig{ns} \\
+Manager & 300 & 64.16 & 4.90 & 0.0\% & 0.0\% & 0.260 & \sig{ns} \\
+\midrule
+Consulting & 300 & 64.20 & 4.93 & 0.0\% & 0.0\% & 0.221 & \sig{ns} \\
+McKinsey & 300 & 64.88 & 4.33 & 0.0\% & 0.0\% & 0.002 & \sig{**} \\
+\midrule
+Unlabeled & 300 & 64.46 & 4.68 & 0.0\% & 0.0\% & 0.053 & \sig{ns} \\
+AI & 300 & 64.47 & 4.27 & 0.0\% & 0.0\% & 0.039 & \sig{*} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}0.27 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & -0.04 & 0.39 & 0.925 & \sig{ns} \\
+Colleague & -0.19 & 0.40 & 0.627 & \sig{ns} \\
+Manager & +0.44 & 0.39 & 0.260 & \sig{ns} \\
+\midrule
+Consulting & +0.48 & 0.39 & 0.221 & \sig{ns} \\
+McKinsey & +1.17 & 0.37 & 0.002 & \sig{**} \\
+\midrule
+Unlabeled & +0.74 & 0.38 & 0.053 & \sig{ns} \\
+AI & +0.76 & 0.37 & 0.039 & \sig{*} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.009$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\[1.1em]
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 64.86 & 6.60 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 66.43 & 7.82 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 62.03 & 8.84 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 60.23 & 8.65 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 59.78 & 6.96 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 62.01 & 8.37 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+AI & 300 & 62.32 & 5.20 & 0.0\% & 0.0\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}0.31 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +7.89 & 0.49 & $<$0.001 & \sig{***} \\
+Colleague & +9.46 & 0.55 & $<$0.001 & \sig{***} \\
+Manager & +5.05 & 0.60 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & +3.26 & 0.59 & $<$0.001 & \sig{***} \\
+McKinsey & +2.81 & 0.51 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & +5.03 & 0.57 & $<$0.001 & \sig{***} \\
+AI & +5.35 & 0.43 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.124$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\clearpage
+\section{First iteration --- round 1 (``Are you sure? In fact, \ldots'')}
+\noindent The anchor is injected \emph{after} a committed first answer; the price below is the model's revised second-pass price. Claude vs.\ GPT per anchor. Control = the full $n{=}1{,}000$ single-shot unprompted baseline for that model (no anchor; no subsampling).
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\caption{First iteration --- Mid anchor (Claude \$65 / GPT \$58).}
+\begin{tabular}{@{}c@{\hspace{1.4em}}c@{}}
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}35.9\% & \cellcolor{gray!22}36.7\% \\
+\midrule
+Intern & 641 & 64.98 & 0.30 & 99.7\% & 99.7\% \\
+Colleague & 641 & 65.00 & 0.00 & 100.0\% & 100.0\% \\
+Manager & 641 & 64.98 & 0.41 & 99.5\% & 99.5\% \\
+\midrule
+Consulting & 641 & 64.99 & 0.28 & 99.8\% & 99.8\% \\
+McKinsey & 641 & 64.99 & 0.28 & 99.8\% & 99.8\% \\
+\midrule
+Unlabeled & 641 & 65.00 & 0.00 & 100.0\% & 100.0\% \\
+AI & 641 & 65.00 & 0.00 & 100.0\% & 100.0\% \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}57.6\% & \cellcolor{gray!22}58.8\% \\
+\midrule
+Intern & 424 & 58.69 & 6.48 & 48.6\% & 50.9\% \\
+Colleague & 424 & 58.78 & 6.45 & 50.2\% & 51.9\% \\
+Manager & 424 & 59.22 & 4.06 & 79.0\% & 79.2\% \\
+\midrule
+Consulting & 424 & 58.87 & 4.64 & 72.2\% & 72.9\% \\
+McKinsey & 424 & 58.33 & 2.29 & 92.2\% & 92.2\% \\
+\midrule
+Unlabeled & 424 & 59.14 & 3.97 & 80.2\% & 80.7\% \\
+AI & 424 & 57.69 & 6.76 & 36.6\% & 39.9\% \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\caption{First iteration --- Low anchor (Claude \$52 / GPT \$47).}
+\begin{tabular}{@{}c@{\hspace{1.4em}}c@{}}
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}1.3\% & \cellcolor{gray!22}1.5\% \\
+\midrule
+Intern & 987 & 52.06 & 0.69 & 99.0\% & 99.0\% \\
+Colleague & 987 & 52.03 & 0.68 & 99.4\% & 99.5\% \\
+Manager & 987 & 52.00 & 0.26 & 99.8\% & 99.8\% \\
+\midrule
+Consulting & 987 & 52.03 & 0.48 & 99.7\% & 99.7\% \\
+McKinsey & 987 & 52.00 & 0.00 & 100.0\% & 100.0\% \\
+\midrule
+Unlabeled & 987 & 52.02 & 0.39 & 99.6\% & 99.6\% \\
+AI & 987 & 52.01 & 0.27 & 99.8\% & 99.8\% \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}15.3\% \\
+\midrule
+Intern & 1{,}000 & 56.68 & 5.52 & 4.0\% & 18.0\% \\
+Colleague & 1{,}000 & 56.65 & 5.56 & 6.7\% & 18.3\% \\
+Manager & 1{,}000 & 54.72 & 6.64 & 33.2\% & 36.6\% \\
+\midrule
+Consulting & 1{,}000 & 54.30 & 6.55 & 31.5\% & 39.2\% \\
+McKinsey & 1{,}000 & 51.21 & 6.62 & 63.0\% & 68.3\% \\
+\midrule
+Unlabeled & 1{,}000 & 53.92 & 6.63 & 35.3\% & 43.5\% \\
+AI & 1{,}000 & 55.98 & 5.74 & 7.5\% & 24.4\% \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\caption{First iteration --- High anchor (Claude \$78 / GPT \$70).}
+\begin{tabular}{@{}c@{\hspace{1.4em}}c@{}}
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}0.1\% & \cellcolor{gray!22}0.1\% \\
+\midrule
+Intern & 999 & 77.39 & 2.86 & 94.8\% & 94.8\% \\
+Colleague & 999 & 77.42 & 2.87 & 95.0\% & 95.0\% \\
+Manager & 999 & 77.54 & 2.42 & 95.7\% & 95.7\% \\
+\midrule
+Consulting & 999 & 77.81 & 1.39 & 97.8\% & 97.8\% \\
+McKinsey & 999 & 77.97 & 0.65 & 99.8\% & 99.8\% \\
+\midrule
+Unlabeled & 999 & 77.98 & 0.52 & 99.8\% & 99.8\% \\
+AI & 999 & 77.97 & 0.49 & 99.7\% & 99.7\% \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}10.9\% \\
+\midrule
+Intern & 1{,}000 & 58.33 & 6.35 & 15.2\% & 17.4\% \\
+Colleague & 1{,}000 & 58.26 & 6.36 & 15.2\% & 17.5\% \\
+Manager & 1{,}000 & 61.39 & 7.62 & 37.0\% & 39.7\% \\
+\midrule
+Consulting & 1{,}000 & 61.39 & 7.62 & 34.1\% & 40.8\% \\
+McKinsey & 1{,}000 & 65.51 & 7.08 & 67.0\% & 69.3\% \\
+\midrule
+Unlabeled & 1{,}000 & 62.44 & 7.96 & 45.2\% & 49.8\% \\
+AI & 1{,}000 & 58.41 & 6.47 & 11.3\% & 19.7\% \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\caption{First iteration --- Very Low anchor (Claude \$30 / GPT \$26).}
+\begin{tabular}{@{}c@{\hspace{1.4em}}c@{}}
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% \\
+\midrule
+Intern & 1{,}000 & 36.76 & 12.88 & 74.7\% & 75.7\% \\
+Colleague & 1{,}000 & 35.10 & 11.48 & 81.5\% & 81.9\% \\
+Manager & 1{,}000 & 35.96 & 12.37 & 79.2\% & 79.4\% \\
+\midrule
+Consulting & 1{,}000 & 35.08 & 10.76 & 78.7\% & 78.9\% \\
+McKinsey & 1{,}000 & 32.94 & 8.72 & 87.9\% & 88.0\% \\
+\midrule
+Unlabeled & 1{,}000 & 32.19 & 7.95 & 92.0\% & 92.1\% \\
+AI & 1{,}000 & 32.31 & 7.86 & 90.6\% & 91.0\% \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% \\
+\midrule
+Intern & 1{,}000 & 56.89 & 5.41 & 0.0\% & 0.0\% \\
+Colleague & 1{,}000 & 56.91 & 5.39 & 0.0\% & 0.0\% \\
+Manager & 1{,}000 & 56.82 & 5.45 & 0.0\% & 0.0\% \\
+\midrule
+Consulting & 1{,}000 & 56.72 & 5.51 & 0.0\% & 0.0\% \\
+McKinsey & 1{,}000 & 56.70 & 5.81 & 0.2\% & 0.2\% \\
+\midrule
+Unlabeled & 1{,}000 & 56.68 & 5.56 & 0.0\% & 0.0\% \\
+AI & 1{,}000 & 56.77 & 5.44 & 0.0\% & 0.0\% \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\caption{First iteration --- Very High anchor (Claude \$100 / GPT \$90).}
+\begin{tabular}{@{}c@{\hspace{1.4em}}c@{}}
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% \\
+\midrule
+Intern & 1{,}000 & 84.24 & 16.49 & 43.2\% & 46.0\% \\
+Colleague & 1{,}000 & 86.73 & 16.20 & 52.9\% & 55.3\% \\
+Manager & 1{,}000 & 87.13 & 15.04 & 50.2\% & 51.5\% \\
+\midrule
+Consulting & 1{,}000 & 87.94 & 14.62 & 51.4\% & 53.2\% \\
+McKinsey & 1{,}000 & 95.12 & 10.88 & 79.3\% & 80.3\% \\
+\midrule
+Unlabeled & 1{,}000 & 97.49 & 8.60 & 89.6\% & 90.7\% \\
+AI & 1{,}000 & 95.60 & 10.42 & 78.8\% & 81.2\% \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% \\
+\midrule
+Intern & 1{,}000 & 58.14 & 6.12 & 0.0\% & 0.0\% \\
+Colleague & 1{,}000 & 58.41 & 6.34 & 0.0\% & 0.0\% \\
+Manager & 1{,}000 & 58.87 & 6.67 & 0.2\% & 0.2\% \\
+\midrule
+Consulting & 1{,}000 & 59.01 & 6.83 & 0.4\% & 0.4\% \\
+McKinsey & 1{,}000 & 59.78 & 8.67 & 3.4\% & 3.4\% \\
+\midrule
+Unlabeled & 1{,}000 & 59.02 & 7.48 & 1.5\% & 1.8\% \\
+AI & 1{,}000 & 57.98 & 5.83 & 0.0\% & 0.0\% \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\caption{First iteration --- Unreasonably Low anchor (Claude \$10 / GPT \$10).}
+\begin{tabular}{@{}c@{\hspace{1.4em}}c@{}}
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% \\
+\midrule
+Intern & 1{,}000 & 63.59 & 4.88 & 0.0\% & 0.0\% \\
+Colleague & 1{,}000 & 63.65 & 4.82 & 0.0\% & 0.0\% \\
+Manager & 1{,}000 & 63.66 & 4.83 & 0.0\% & 0.0\% \\
+\midrule
+Consulting & 1{,}000 & 63.56 & 4.91 & 0.0\% & 0.0\% \\
+McKinsey & 1{,}000 & 63.52 & 4.99 & 0.0\% & 0.0\% \\
+\midrule
+Unlabeled & 1{,}000 & 63.58 & 5.11 & 0.1\% & 0.1\% \\
+AI & 1{,}000 & 63.49 & 5.23 & 0.1\% & 0.1\% \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% \\
+\midrule
+Intern & 1{,}000 & 56.98 & 5.35 & 0.0\% & 0.0\% \\
+Colleague & 1{,}000 & 56.97 & 5.35 & 0.0\% & 0.0\% \\
+Manager & 1{,}000 & 56.96 & 5.37 & 0.0\% & 0.0\% \\
+\midrule
+Consulting & 1{,}000 & 56.97 & 5.35 & 0.0\% & 0.0\% \\
+McKinsey & 1{,}000 & 56.98 & 5.37 & 0.0\% & 0.0\% \\
+\midrule
+Unlabeled & 1{,}000 & 56.95 & 5.34 & 0.0\% & 0.0\% \\
+AI & 1{,}000 & 56.98 & 5.37 & 0.0\% & 0.0\% \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\caption{First iteration --- Unreasonably High anchor (Claude \$160 / GPT \$160).}
+\begin{tabular}{@{}c@{\hspace{1.4em}}c@{}}
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% \\
+\midrule
+Intern & 1{,}000 & 68.19 & 17.08 & 2.5\% & 2.7\% \\
+Colleague & 1{,}000 & 77.28 & 30.36 & 10.8\% & 10.8\% \\
+Manager & 1{,}000 & 73.56 & 26.00 & 7.4\% & 7.4\% \\
+\midrule
+Consulting & 1{,}000 & 75.86 & 24.59 & 6.0\% & 6.2\% \\
+McKinsey & 1{,}000 & 83.24 & 36.30 & 16.9\% & 17.0\% \\
+\midrule
+Unlabeled & 1{,}000 & 89.34 & 41.09 & 24.2\% & 24.2\% \\
+AI & 1{,}000 & 89.07 & 38.28 & 20.5\% & 20.5\% \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% \\
+\midrule
+Intern & 1{,}000 & 57.33 & 5.73 & 0.0\% & 0.0\% \\
+Colleague & 1{,}000 & 57.45 & 5.73 & 0.0\% & 0.0\% \\
+Manager & 1{,}000 & 57.60 & 5.92 & 0.0\% & 0.0\% \\
+\midrule
+Consulting & 1{,}000 & 57.82 & 6.15 & 0.0\% & 0.0\% \\
+McKinsey & 1{,}000 & 58.03 & 6.42 & 0.0\% & 0.0\% \\
+\midrule
+Unlabeled & 1{,}000 & 57.63 & 5.82 & 0.0\% & 0.0\% \\
+AI & 1{,}000 & 58.01 & 6.48 & 0.0\% & 0.0\% \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\caption{First iteration --- Ridiculously High anchor (Claude \$1{,}000 / GPT \$1{,}000).}
+\begin{tabular}{@{}c@{\hspace{1.4em}}c@{}}
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}63.71 & \cellcolor{gray!22}4.72 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% \\
+\midrule
+Intern & 1{,}000 & 63.71 & 4.72 & 0.0\% & 0.0\% \\
+Colleague & 1{,}000 & 63.71 & 4.72 & 0.0\% & 0.0\% \\
+Manager & 1{,}000 & 63.71 & 4.72 & 0.0\% & 0.0\% \\
+\midrule
+Consulting & 1{,}000 & 63.71 & 4.72 & 0.0\% & 0.0\% \\
+McKinsey & 1{,}000 & 63.71 & 4.72 & 0.0\% & 0.0\% \\
+\midrule
+Unlabeled & 1{,}000 & 63.71 & 4.72 & 0.0\% & 0.0\% \\
+AI & 1{,}000 & 63.71 & 4.72 & 0.0\% & 0.0\% \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.48\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}1{,}000 & \cellcolor{gray!22}56.97 & \cellcolor{gray!22}5.35 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% \\
+\midrule
+Intern & 1{,}000 & 57.02 & 5.35 & 0.0\% & 0.0\% \\
+Colleague & 1{,}000 & 57.06 & 5.41 & 0.0\% & 0.0\% \\
+Manager & 1{,}000 & 57.19 & 5.65 & 0.0\% & 0.0\% \\
+\midrule
+Consulting & 1{,}000 & 57.13 & 5.46 & 0.0\% & 0.0\% \\
+McKinsey & 1{,}000 & 57.10 & 5.51 & 0.0\% & 0.0\% \\
+\midrule
+Unlabeled & 1{,}000 & 57.21 & 5.48 & 0.0\% & 0.0\% \\
+AI & 1{,}000 & 57.23 & 5.47 & 0.0\% & 0.0\% \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\clearpage
+\section{Further iterations --- rounds 2+ (sustained pressure)}
+\noindent Cohort: conversations that did \emph{not} settle on the first challenge and were pushed again (round $\geq 2$). For each anchor $\times$ authority: share whose \emph{final} price \textbf{survives} (more than \$2 from the anchor), \textbf{collapses to anchor} (exactly on it), or \textbf{collapses within \$\boldmath$\pm2$}. By construction survive\% $=100-{}$($\pm2$)\%, and anchor\% $\leq$ ($\pm2$)\%.
+
+\subsection*{Claude Haiku 4.5}
+\begin{table}[H]\centering\scriptsize\setlength{\tabcolsep}{3pt}
+\caption{Claude Haiku 4.5 --- further-iteration outcomes (sv=survive\%, @a=collapse-to-anchor\%, $\pm$2=collapse within \$2\%).}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l ccc ccc ccc ccc ccc ccc ccc ccc}
+\toprule
+Authority & \multicolumn{3}{c}{Mid~(\$65)} & \multicolumn{3}{c}{Low~(\$52)} & \multicolumn{3}{c}{High~(\$78)} & \multicolumn{3}{c}{Very Low~(\$30)} & \multicolumn{3}{c}{Very High~(\$100)} & \multicolumn{3}{c}{Unreasonably Low~(\$10)} & \multicolumn{3}{c}{Unreasonably High~(\$160)} & \multicolumn{3}{c}{Ridiculously High~(\$1{,}000)} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} \cmidrule(lr){14-16} \cmidrule(lr){17-19} \cmidrule(lr){20-22} \cmidrule(lr){23-25}
+ & sv & @a & $\pm$2 & sv & @a & $\pm$2 & sv & @a & $\pm$2 & sv & @a & $\pm$2 & sv & @a & $\pm$2 & sv & @a & $\pm$2 & sv & @a & $\pm$2 & sv & @a & $\pm$2 \\
+\midrule
+Intern & 0\% & 100\% & 100\% & 0\% & 100\% & 100\% & 0\% & 100\% & 100\% & 1\% & 99\% & 99\% & 1\% & 99\% & 99\% & 92\% & 8\% & 8\% & 25\% & 75\% & 75\% & 100\% & 0\% & 0\% \\
+Colleague & -- & -- & -- & 0\% & 100\% & 100\% & 0\% & 100\% & 100\% & 1\% & 99\% & 99\% & 0\% & 100\% & 100\% & 83\% & 17\% & 17\% & 8\% & 92\% & 92\% & 100\% & 0\% & 0\% \\
+Manager & 0\% & 100\% & 100\% & 0\% & 100\% & 100\% & 2\% & 98\% & 98\% & 8\% & 92\% & 92\% & 6\% & 94\% & 94\% & 92\% & 8\% & 8\% & 32\% & 68\% & 68\% & 100\% & 0\% & 0\% \\
+\midrule
+Consulting & 0\% & 100\% & 100\% & 0\% & 100\% & 100\% & 0\% & 100\% & 100\% & 0\% & 100\% & 100\% & 0\% & 100\% & 100\% & 69\% & 31\% & 31\% & 4\% & 96\% & 96\% & 100\% & 0\% & 0\% \\
+McKinsey & 0\% & 100\% & 100\% & -- & -- & -- & 0\% & 100\% & 100\% & 6\% & 94\% & 94\% & 9\% & 91\% & 91\% & 89\% & 11\% & 11\% & 40\% & 60\% & 60\% & 100\% & 0\% & 0\% \\
+\midrule
+Unlabeled & -- & -- & -- & 0\% & 100\% & 100\% & 0\% & 100\% & 100\% & 2\% & 98\% & 98\% & 1\% & 99\% & 99\% & 87\% & 13\% & 13\% & 17\% & 83\% & 83\% & 100\% & 0\% & 0\% \\
+AI & -- & -- & -- & 0\% & 100\% & 100\% & 0\% & 100\% & 100\% & 3\% & 97\% & 97\% & 2\% & 98\% & 98\% & 96\% & 4\% & 4\% & 12\% & 88\% & 88\% & 100\% & 0\% & 0\% \\
+\midrule
+\textbf{Total} & 0\% & 100\% & 100\% & 0\% & 100\% & 100\% & 1\% & 99\% & 99\% & 3\% & 97\% & 97\% & 2\% & 98\% & 98\% & 87\% & 13\% & 13\% & 19\% & 81\% & 81\% & 100\% & 0\% & 0\% \\
+\textit{n} & \multicolumn{3}{c}{7} & \multicolumn{3}{c}{27} & \multicolumn{3}{c}{174} & \multicolumn{3}{c}{1{,}154} & \multicolumn{3}{c}{2{,}546} & \multicolumn{3}{c}{6{,}998} & \multicolumn{3}{c}{6{,}117} & \multicolumn{3}{c}{7{,}000} \\
+\bottomrule\end{tabular}}
+\end{table}
+
+\subsection*{GPT-5.4 Mini}
+\begin{table}[H]\centering\scriptsize\setlength{\tabcolsep}{3pt}
+\caption{GPT-5.4 Mini --- further-iteration outcomes (sv=survive\%, @a=collapse-to-anchor\%, $\pm$2=collapse within \$2\%).}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l ccc ccc ccc ccc ccc ccc ccc ccc}
+\toprule
+Authority & \multicolumn{3}{c}{Mid~(\$58)} & \multicolumn{3}{c}{Low~(\$47)} & \multicolumn{3}{c}{High~(\$70)} & \multicolumn{3}{c}{Very Low~(\$26)} & \multicolumn{3}{c}{Very High~(\$90)} & \multicolumn{3}{c}{Unreasonably Low~(\$10)} & \multicolumn{3}{c}{Unreasonably High~(\$160)} & \multicolumn{3}{c}{Ridiculously High~(\$1{,}000)} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} \cmidrule(lr){14-16} \cmidrule(lr){17-19} \cmidrule(lr){20-22} \cmidrule(lr){23-25}
+ & sv & @a & $\pm$2 & sv & @a & $\pm$2 & sv & @a & $\pm$2 & sv & @a & $\pm$2 & sv & @a & $\pm$2 & sv & @a & $\pm$2 & sv & @a & $\pm$2 & sv & @a & $\pm$2 \\
+\midrule
+Intern & 39\% & 60\% & 61\% & 69\% & 23\% & 31\% & 74\% & 24\% & 26\% & 100\% & 0\% & 0\% & 99\% & 1\% & 1\% & 100\% & 0\% & 0\% & 100\% & 0\% & 0\% & 100\% & 0\% & 0\% \\
+Colleague & 25\% & 74\% & 75\% & 57\% & 38\% & 43\% & 65\% & 34\% & 35\% & 100\% & 0\% & 0\% & 98\% & 1\% & 2\% & 100\% & 0\% & 0\% & 100\% & 0\% & 0\% & 100\% & 0\% & 0\% \\
+Manager & 10\% & 90\% & 90\% & 33\% & 66\% & 67\% & 37\% & 63\% & 63\% & 99\% & 1\% & 1\% & 94\% & 6\% & 6\% & 100\% & 0\% & 0\% & 100\% & 0\% & 0\% & 100\% & 0\% & 0\% \\
+\midrule
+Consulting & 9\% & 91\% & 91\% & 31\% & 66\% & 69\% & 38\% & 61\% & 62\% & 98\% & 2\% & 2\% & 94\% & 6\% & 6\% & 100\% & 0\% & 0\% & 100\% & 0\% & 0\% & 100\% & 0\% & 0\% \\
+McKinsey & 0\% & 100\% & 100\% & 10\% & 89\% & 90\% & 12\% & 88\% & 88\% & 81\% & 19\% & 19\% & 72\% & 28\% & 28\% & 100\% & 0\% & 0\% & 99\% & 1\% & 1\% & 100\% & 0\% & 0\% \\
+\midrule
+Unlabeled & 1\% & 99\% & 99\% & 9\% & 90\% & 91\% & 14\% & 86\% & 86\% & 95\% & 5\% & 5\% & 77\% & 23\% & 23\% & 100\% & 0\% & 0\% & 100\% & 0\% & 0\% & 100\% & 0\% & 0\% \\
+AI & 14\% & 86\% & 86\% & 29\% & 68\% & 71\% & 48\% & 50\% & 52\% & 98\% & 2\% & 2\% & 95\% & 5\% & 5\% & 100\% & 0\% & 0\% & 100\% & 0\% & 0\% & 100\% & 0\% & 0\% \\
+\midrule
+\textbf{Total} & 19\% & 80\% & 81\% & 38\% & 58\% & 62\% & 46\% & 53\% & 54\% & 96\% & 4\% & 4\% & 90\% & 10\% & 10\% & 100\% & 0\% & 0\% & 100\% & 0\% & 0\% & 100\% & 0\% & 0\% \\
+\textit{n} & \multicolumn{3}{c}{1{,}022} & \multicolumn{3}{c}{5{,}188} & \multicolumn{3}{c}{4{,}750} & \multicolumn{3}{c}{6{,}998} & \multicolumn{3}{c}{6{,}945} & \multicolumn{3}{c}{7{,}000} & \multicolumn{3}{c}{7{,}000} & \multicolumn{3}{c}{7{,}000} \\
+\bottomrule\end{tabular}}
+\end{table}
+
+\clearpage
+\section{Prompt sensitivity --- ambiguous (range-based) inputs}
+\noindent Same single-shot design with a modified product prompt (Ambiguous); three core anchors only. Each level's shaded Control row is this prompt's own unanchored baseline ($n{=}300$ per model, collected directly under the variant prompt---not subsampled). The comparison table below contrasts this variant baseline against the full-information control pool ($n{=}1{,}000$).
+
+\begin{table}[H]\centering\footnotesize
+\caption{Unprompted control: full-information vs.\ Ambiguous prompt (no anchor; does the prompt change shift the baseline?).}
+\begin{tabular}{@{}l l r r r@{}}
+\toprule
+Model & Prompt & $n$ & Mean & SD \\
+\midrule
+Claude Haiku 4.5 & Full information & 1{,}000 & 63.71 & 4.72 \\
+Claude Haiku 4.5 & Ambiguous & 300 & 62.09 & 4.99 \\
+\midrule
+GPT-5.4 Mini & Full information & 1{,}000 & 56.97 & 5.35 \\
+GPT-5.4 Mini & Ambiguous & 300 & 57.18 & 5.10 \\
+\bottomrule\end{tabular}\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{7pt}
+\caption{Ambiguous --- Mid anchor (Claude \$65 / GPT \$58).}
+\begin{tabular}{@{}c@{\hspace{0.5em}}c@{}}
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}62.09 & \cellcolor{gray!22}4.99 & \cellcolor{gray!22}32.3\% & \cellcolor{gray!22}33.0\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 63.74 & 5.25 & 28.7\% & 29.3\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 63.73 & 4.12 & 39.3\% & 41.3\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 63.79 & 3.52 & 53.0\% & 55.7\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 62.85 & 3.75 & 44.3\% & 45.7\% & 0.037 & \sig{*} \\
+McKinsey & 300 & 64.33 & 2.68 & 68.3\% & 70.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 64.19 & 3.03 & 63.7\% & 64.0\% & $<$0.001 & \sig{***} \\
+AI & 300 & 63.65 & 4.86 & 31.7\% & 34.0\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}62.09 & \cellcolor{gray!22}0.29 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +1.65 & 0.42 & $<$0.001 & \sig{***} \\
+Colleague & +1.63 & 0.37 & $<$0.001 & \sig{***} \\
+Manager & +1.70 & 0.35 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & +0.75 & 0.36 & 0.037 & \sig{*} \\
+McKinsey & +2.24 & 0.33 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & +2.09 & 0.34 & $<$0.001 & \sig{***} \\
+AI & +1.56 & 0.40 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.027$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\[1.1em]
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}57.18 & \cellcolor{gray!22}5.10 & \cellcolor{gray!22}63.7\% & \cellcolor{gray!22}64.7\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 62.44 & 5.19 & 52.7\% & 53.0\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 61.29 & 4.49 & 54.0\% & 54.3\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 58.75 & 2.82 & 84.3\% & 85.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 60.56 & 5.05 & 40.0\% & 42.0\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 58.29 & 2.68 & 61.7\% & 67.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 61.13 & 4.50 & 46.7\% & 49.7\% & $<$0.001 & \sig{***} \\
+AI & 300 & 59.53 & 3.44 & 54.0\% & 56.3\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}57.18 & \cellcolor{gray!22}0.29 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +5.26 & 0.42 & $<$0.001 & \sig{***} \\
+Colleague & +4.11 & 0.39 & $<$0.001 & \sig{***} \\
+Manager & +1.58 & 0.34 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & +3.39 & 0.41 & $<$0.001 & \sig{***} \\
+McKinsey & +1.12 & 0.33 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & +3.96 & 0.39 & $<$0.001 & \sig{***} \\
+AI & +2.36 & 0.36 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.130$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{7pt}
+\caption{Ambiguous --- Low anchor (Claude \$52 / GPT \$47).}
+\begin{tabular}{@{}c@{\hspace{0.5em}}c@{}}
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}62.09 & \cellcolor{gray!22}4.99 & \cellcolor{gray!22}1.3\% & \cellcolor{gray!22}1.7\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 60.03 & 5.54 & 15.3\% & 16.7\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 58.54 & 5.68 & 22.3\% & 24.0\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 55.90 & 5.22 & 40.0\% & 43.3\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 56.33 & 4.80 & 31.0\% & 35.3\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 53.98 & 3.53 & 63.7\% & 68.7\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 55.03 & 4.14 & 43.3\% & 46.3\% & $<$0.001 & \sig{***} \\
+AI & 300 & 58.46 & 5.82 & 21.7\% & 23.0\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}62.09 & \cellcolor{gray!22}0.29 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & -2.06 & 0.43 & $<$0.001 & \sig{***} \\
+Colleague & -3.55 & 0.44 & $<$0.001 & \sig{***} \\
+Manager & -6.19 & 0.42 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & -5.77 & 0.40 & $<$0.001 & \sig{***} \\
+McKinsey & -8.12 & 0.35 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & -7.06 & 0.37 & $<$0.001 & \sig{***} \\
+AI & -3.64 & 0.44 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.205$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\[1.1em]
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}57.18 & \cellcolor{gray!22}5.10 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}14.7\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 52.01 & 4.26 & 11.3\% & 52.3\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 50.18 & 3.90 & 30.0\% & 71.3\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 48.96 & 3.05 & 31.3\% & 88.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 52.71 & 4.52 & 1.3\% & 46.7\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 49.07 & 1.79 & 2.7\% & 94.7\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 50.87 & 4.13 & 5.0\% & 70.7\% & $<$0.001 & \sig{***} \\
+AI & 300 & 49.83 & 2.87 & 0.7\% & 76.3\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}57.18 & \cellcolor{gray!22}0.29 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & -5.17 & 0.38 & $<$0.001 & \sig{***} \\
+Colleague & -7.00 & 0.37 & $<$0.001 & \sig{***} \\
+Manager & -8.22 & 0.34 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & -4.46 & 0.39 & $<$0.001 & \sig{***} \\
+McKinsey & -8.11 & 0.31 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & -6.31 & 0.38 & $<$0.001 & \sig{***} \\
+AI & -7.35 & 0.34 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.304$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{7pt}
+\caption{Ambiguous --- High anchor (Claude \$78 / GPT \$70).}
+\begin{tabular}{@{}c@{\hspace{0.5em}}c@{}}
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}62.09 & \cellcolor{gray!22}4.99 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 67.78 & 4.62 & 7.0\% & 7.3\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 69.25 & 4.73 & 12.0\% & 12.3\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 68.90 & 4.39 & 10.3\% & 10.7\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 68.61 & 4.60 & 10.7\% & 10.7\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 72.39 & 5.07 & 35.7\% & 35.7\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 71.89 & 5.09 & 31.7\% & 32.0\% & $<$0.001 & \sig{***} \\
+AI & 300 & 68.21 & 4.65 & 10.3\% & 11.0\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}62.09 & \cellcolor{gray!22}0.29 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +5.68 & 0.39 & $<$0.001 & \sig{***} \\
+Colleague & +7.16 & 0.40 & $<$0.001 & \sig{***} \\
+Manager & +6.80 & 0.38 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & +6.51 & 0.39 & $<$0.001 & \sig{***} \\
+McKinsey & +10.30 & 0.41 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & +9.80 & 0.41 & $<$0.001 & \sig{***} \\
+AI & +6.12 & 0.39 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.275$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\[1.1em]
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}57.18 & \cellcolor{gray!22}5.10 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}9.7\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 68.12 & 4.23 & 4.7\% & 76.3\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 68.04 & 4.85 & 12.3\% & 64.7\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 68.21 & 3.37 & 13.7\% & 84.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 66.04 & 4.98 & 3.3\% & 63.0\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 68.17 & 1.59 & 3.7\% & 97.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 67.71 & 4.47 & 3.3\% & 76.7\% & $<$0.001 & \sig{***} \\
+AI & 300 & 67.95 & 2.69 & 1.3\% & 90.7\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}57.18 & \cellcolor{gray!22}0.29 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +10.94 & 0.38 & $<$0.001 & \sig{***} \\
+Colleague & +10.86 & 0.41 & $<$0.001 & \sig{***} \\
+Manager & +11.03 & 0.35 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & +8.86 & 0.41 & $<$0.001 & \sig{***} \\
+McKinsey & +11.00 & 0.31 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & +10.53 & 0.39 & $<$0.001 & \sig{***} \\
+AI & +10.77 & 0.33 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.433$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\clearpage
+\section{Prompt sensitivity --- no margin / no CAC}
+\noindent Same single-shot design with a modified product prompt (No-margin/no-CAC); three core anchors only. Each level's shaded Control row is this prompt's own unanchored baseline ($n{=}300$ per model, collected directly under the variant prompt---not subsampled). The comparison table below contrasts this variant baseline against the full-information control pool ($n{=}1{,}000$).
+
+\begin{table}[H]\centering\footnotesize
+\caption{Unprompted control: full-information vs.\ No-margin/no-CAC prompt (no anchor; does the prompt change shift the baseline?).}
+\begin{tabular}{@{}l l r r r@{}}
+\toprule
+Model & Prompt & $n$ & Mean & SD \\
+\midrule
+Claude Haiku 4.5 & Full information & 1{,}000 & 63.71 & 4.72 \\
+Claude Haiku 4.5 & No-margin/no-CAC & 300 & 65.87 & 5.22 \\
+\midrule
+GPT-5.4 Mini & Full information & 1{,}000 & 56.97 & 5.35 \\
+GPT-5.4 Mini & No-margin/no-CAC & 300 & 56.38 & 4.51 \\
+\bottomrule\end{tabular}\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{7pt}
+\caption{No-margin/no-CAC --- Mid anchor (Claude \$65 / GPT \$58).}
+\begin{tabular}{@{}c@{\hspace{0.5em}}c@{}}
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}65.87 & \cellcolor{gray!22}5.22 & \cellcolor{gray!22}22.7\% & \cellcolor{gray!22}24.0\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 67.63 & 5.63 & 20.3\% & 21.0\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 66.37 & 4.94 & 35.3\% & 36.7\% & 0.222 & \sig{ns} \\
+Manager & 300 & 66.36 & 4.42 & 40.3\% & 42.7\% & 0.209 & \sig{ns} \\
+\midrule
+Consulting & 300 & 66.73 & 4.31 & 35.3\% & 36.3\% & 0.027 & \sig{*} \\
+McKinsey & 300 & 65.08 & 3.12 & 53.0\% & 53.3\% & 0.025 & \sig{*} \\
+\midrule
+Unlabeled & 300 & 66.56 & 3.84 & 53.0\% & 54.7\% & 0.063 & \sig{ns} \\
+AI & 300 & 65.41 & 5.17 & 29.7\% & 32.0\% & 0.286 & \sig{ns} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}65.87 & \cellcolor{gray!22}0.30 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +1.76 & 0.44 & $<$0.001 & \sig{***} \\
+Colleague & +0.51 & 0.42 & 0.222 & \sig{ns} \\
+Manager & +0.50 & 0.40 & 0.209 & \sig{ns} \\
+\midrule
+Consulting & +0.87 & 0.39 & 0.027 & \sig{*} \\
+McKinsey & -0.79 & 0.35 & 0.025 & \sig{*} \\
+\midrule
+Unlabeled & +0.70 & 0.37 & 0.063 & \sig{ns} \\
+AI & -0.45 & 0.42 & 0.286 & \sig{ns} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.025$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\[1.1em]
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}56.38 & \cellcolor{gray!22}4.51 & \cellcolor{gray!22}61.7\% & \cellcolor{gray!22}62.0\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 63.05 & 4.19 & 32.0\% & 32.0\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 60.57 & 3.90 & 51.0\% & 51.7\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 58.17 & 2.19 & 82.0\% & 84.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 57.06 & 3.73 & 34.3\% & 35.3\% & 0.046 & \sig{*} \\
+McKinsey & 300 & 57.84 & 3.11 & 43.7\% & 53.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 58.57 & 2.42 & 83.7\% & 85.0\% & $<$0.001 & \sig{***} \\
+AI & 300 & 57.99 & 3.24 & 45.3\% & 51.7\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}56.38 & \cellcolor{gray!22}0.26 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +6.66 & 0.36 & $<$0.001 & \sig{***} \\
+Colleague & +4.19 & 0.34 & $<$0.001 & \sig{***} \\
+Manager & +1.79 & 0.29 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & +0.68 & 0.34 & 0.046 & \sig{*} \\
+McKinsey & +1.46 & 0.32 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & +2.19 & 0.30 & $<$0.001 & \sig{***} \\
+AI & +1.61 & 0.32 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.247$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{7pt}
+\caption{No-margin/no-CAC --- Low anchor (Claude \$52 / GPT \$47).}
+\begin{tabular}{@{}c@{\hspace{0.5em}}c@{}}
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}65.87 & \cellcolor{gray!22}5.22 & \cellcolor{gray!22}0.3\% & \cellcolor{gray!22}0.7\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 62.03 & 5.48 & 11.7\% & 12.3\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 60.15 & 5.25 & 15.3\% & 16.7\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 58.34 & 5.51 & 29.3\% & 32.3\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 59.07 & 5.88 & 24.0\% & 27.3\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 55.18 & 3.82 & 45.3\% & 52.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 56.47 & 5.20 & 46.0\% & 49.7\% & $<$0.001 & \sig{***} \\
+AI & 300 & 59.24 & 5.79 & 25.3\% & 27.7\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}65.87 & \cellcolor{gray!22}0.30 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & -3.84 & 0.44 & $<$0.001 & \sig{***} \\
+Colleague & -5.72 & 0.43 & $<$0.001 & \sig{***} \\
+Manager & -7.53 & 0.44 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & -6.80 & 0.45 & $<$0.001 & \sig{***} \\
+McKinsey & -10.69 & 0.37 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & -9.40 & 0.43 & $<$0.001 & \sig{***} \\
+AI & -6.63 & 0.45 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.255$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\[1.1em]
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}56.38 & \cellcolor{gray!22}4.51 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}13.3\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 53.22 & 3.57 & 2.0\% & 29.7\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 51.07 & 3.77 & 19.3\% & 57.7\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 48.77 & 2.21 & 21.0\% & 91.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 49.88 & 2.65 & 0.0\% & 79.0\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 49.35 & 1.82 & 2.0\% & 90.7\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 48.88 & 2.11 & 7.0\% & 91.0\% & $<$0.001 & \sig{***} \\
+AI & 300 & 50.80 & 3.20 & 0.0\% & 59.0\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}56.38 & \cellcolor{gray!22}0.26 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & -3.16 & 0.33 & $<$0.001 & \sig{***} \\
+Colleague & -5.32 & 0.34 & $<$0.001 & \sig{***} \\
+Manager & -7.61 & 0.29 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & -6.50 & 0.30 & $<$0.001 & \sig{***} \\
+McKinsey & -7.03 & 0.28 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & -7.51 & 0.29 & $<$0.001 & \sig{***} \\
+AI & -5.58 & 0.32 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.381$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]\centering\footnotesize\setlength{\tabcolsep}{7pt}
+\caption{No-margin/no-CAC --- High anchor (Claude \$78 / GPT \$70).}
+\begin{tabular}{@{}c@{\hspace{0.5em}}c@{}}
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}65.87 & \cellcolor{gray!22}5.22 & \cellcolor{gray!22}2.0\% & \cellcolor{gray!22}2.3\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 69.86 & 5.32 & 11.3\% & 12.0\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 70.70 & 5.40 & 16.7\% & 16.7\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 73.06 & 4.94 & 32.0\% & 34.3\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 71.74 & 4.93 & 24.0\% & 24.3\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 74.18 & 4.09 & 43.0\% & 43.3\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 74.40 & 4.61 & 48.3\% & 48.7\% & $<$0.001 & \sig{***} \\
+AI & 300 & 69.12 & 5.35 & 15.0\% & 16.0\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize Claude Haiku 4.5 --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}65.87 & \cellcolor{gray!22}0.30 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +3.99 & 0.43 & $<$0.001 & \sig{***} \\
+Colleague & +4.83 & 0.43 & $<$0.001 & \sig{***} \\
+Manager & +7.20 & 0.42 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & +5.88 & 0.41 & $<$0.001 & \sig{***} \\
+McKinsey & +8.32 & 0.38 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & +8.53 & 0.40 & $<$0.001 & \sig{***} \\
+AI & +3.26 & 0.43 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.224$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\[1.1em]
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- stats}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r r r r c@{}}
+\toprule
+Source & $n$ & Mean & SD & \%anc & \%$\pm$2 & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control & \cellcolor{gray!22}300 & \cellcolor{gray!22}56.38 & \cellcolor{gray!22}4.51 & \cellcolor{gray!22}0.0\% & \cellcolor{gray!22}5.7\% & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & 300 & 69.00 & 5.26 & 6.7\% & 60.7\% & $<$0.001 & \sig{***} \\
+Colleague & 300 & 68.64 & 4.18 & 11.0\% & 71.3\% & $<$0.001 & \sig{***} \\
+Manager & 300 & 68.22 & 2.54 & 8.7\% & 90.3\% & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & 300 & 67.17 & 2.51 & 0.3\% & 82.7\% & $<$0.001 & \sig{***} \\
+McKinsey & 300 & 67.77 & 1.64 & 0.7\% & 91.0\% & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & 300 & 68.49 & 1.85 & 12.3\% & 96.3\% & $<$0.001 & \sig{***} \\
+AI & 300 & 67.65 & 3.11 & 0.3\% & 90.7\% & $<$0.001 & \sig{***} \\
+\bottomrule\end{tabular}
+\end{minipage} &
+\begin{minipage}[t]{0.49\textwidth}\centering
+\textbf{\footnotesize GPT-5.4 Mini --- regression}\par\vspace{2pt}
+\begin{tabular}{@{}l r r r c@{}}
+\toprule
+Authority & Coef & SE & $p$ & sig \\
+\midrule
+\cellcolor{gray!22}Control (icpt) & \cellcolor{gray!22}56.38 & \cellcolor{gray!22}0.26 & \cellcolor{gray!22}-- & \cellcolor{gray!22}-- \\
+\midrule
+Intern & +12.61 & 0.40 & $<$0.001 & \sig{***} \\
+Colleague & +12.26 & 0.36 & $<$0.001 & \sig{***} \\
+Manager & +11.84 & 0.30 & $<$0.001 & \sig{***} \\
+\midrule
+Consulting & +10.79 & 0.30 & $<$0.001 & \sig{***} \\
+McKinsey & +11.38 & 0.28 & $<$0.001 & \sig{***} \\
+\midrule
+Unlabeled & +12.11 & 0.28 & $<$0.001 & \sig{***} \\
+AI & +11.27 & 0.32 & $<$0.001 & \sig{***} \\
+\midrule
+\multicolumn{5}{c}{\scriptsize $n=2{,}400$, $R^2=0.568$} \\
+\bottomrule\end{tabular}
+\end{minipage} \\
+\end{tabular}
+\end{table}
+
+\end{document}
