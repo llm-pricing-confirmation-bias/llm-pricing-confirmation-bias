@@ -29,7 +29,7 @@ Trial-level outputs are large and are **not** shipped in this repository.
 Download the curated archive and place it here as `results/`:
 
 1. Download from Google Drive:  
-   **[PLACEHOLDER — paste Google Drive link here]**
+   **[to be added]**
 2. Unpack so the directory layout looks like:
 
 ```text
